@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>刮刮乐</title>
+    <style>
+        canvas {
+            position: absolute;
+            border: 1px solid #000;
+
+        }
+
+        span {
+            position: absolute;
+            width: 400px;
+            height: 300px;
+            text-align: center;
+            line-height: 300px;
+            color: red;
+            font-weight: bold;
+            background-image: url(../test/img/1.png);
+            background-repeat: no-repeat;
+            background-position: center;
+            background-size: 100% 100%;
+        }
+    </style>
+</head>
+
+<body>
+    <span>恭喜你中奖了</span>
+    <canvas width="400px" height="300px"></canvas>
+
+    <script>
+        (function () {
+            var canv = document.getElementsByTagName('canvas')[0];
+            var ctx = canv.getContext('2d');
+            var width = canv.width;
+            var height = canv.height;
+            var lastX, lastY;
+
+            ctx.beginPath();
+            ctx.fillStyle = '#ddd';
+            ctx.fillRect(0, 0, width, height);
+            ctx.lineWidth = 10;
+            ctx.lineCap = 'round';//加帽子
+            ctx.globalCompositeOperation = 'destination-out';//当用画笔画时显示出底下背景 在源图像外显示目标图像 相抵消一样 
+            canv.addEventListener('mousedown', down, false);
+            function down(e) {
+                console.log(e);
+                lastX = e.offsetX; //元素里 鼠标点击位置
+                lastY = e.offsetY;
+                document.addEventListener('mousemove', move, false);
+                document.addEventListener('mouseup', up, false);
+            }
+            function move(e) {
+                var nowX = e.offsetX;
+                var nowY = e.offsetY;
+                ctx.moveTo(lastX, lastY);
+                ctx.lineTo(nowX, nowY);
+                ctx.stroke();
+                lastX = nowX;
+                lastY = nowY;
+            }
+            function up(e) {
+                document.removeEventListener('mousemove', move, false);
+                celarAll();
+            }
+            function celarAll() {
+                var pixel = ctx.getImageData(0, 0, width, height); //获取canvas像素信息
+                var data = pixel.data; // 属性data是管理每一个像素width*height*4
+                var row = pixel.height; // 行
+                var col = pixel.width; // 列
+                var count = 0;
+                //第一种 是根据一个像素点一个像素点找
+                for (var i = 0; i < row; i++) {
+                    var c = i * col * 4; //获取上一行及前面所有数据的个数 4是r,g,b,a  
+                    for (var j = 0; j < col; j++) {
+                        if (data[c + j * 4 + 3] == 0) { //j * 4 + 3是第几个数据 0+0*4+3 1200+1*4+3
+                            count++;//width*height每个数据中的a==0，count++
+                        }
+                    }
+                }
+                //第二种 根据数据找
+                for (var i = 3; i < row * col * 4; i += 4) {
+                    if (data[i] == 0) {
+                        count++;
+                    }
+                }
+                //清除画布
+                if (count > col * row * 0.3) {//count > width*height * 3/10
+                    ctx.clearRect(0, 0, width, height);//清除画布
+                }
+            }
+        }())
+
+    </script>
+
+</body>
+
+</html>

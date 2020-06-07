@@ -1,0 +1,16 @@
+@charset "utf-8";
+/* CSS Document */
+.mr-can{
+	width:800px;
+	height:590px;
+	margin:auto;
+	border:1px solid #f00;
+	}
+#flyBtn{
+	width:60px;
+	height:40px;
+	margin-left:370px;
+	background-color:#F00;
+	font-size:24px;
+	color:#FFF;
+	}

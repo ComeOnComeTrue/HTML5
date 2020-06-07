@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        img {
+            width: 300px;
+            height: 300px;
+        }
+
+        .progress {
+            width: 300px;
+            height: 30px;
+            border: 1px solid #000;
+        }
+
+        .bar {
+            width: 0px;
+            height: 30px;
+            background-color: aqua;
+        }
+    </style>
+</head>
+
+<body>
+    <input type="file">
+    <img src="" alt="">
+    <div class="progress">
+        <div class="bar"></div>
+    </div>
+    <span class="text"></span>
+    <button class="btn">终止</button>
+
+
+    <script src="./tools/fileReader.js"></script>
+    <script>
+        var inp = document.getElementsByTagName('input')[0];
+        var img = document.getElementsByTagName('img')[0];
+        var bar = document.getElementsByClassName('bar')[0];
+        var text = document.getElementsByClassName('text')[0];
+        var btn = document.getElementsByClassName('btn')[0];
+        var reader = new FileReader;
+
+        inp.onchange = function () {
+            bar.style.width = '0px';
+            console.log(inp.files);//input的属性files看文件信息
+            // reader.readAsDataURL(inp.files[0]);//转换的类型
+            var reader = new PartFileReader(inp.files[0], 'readAsDataURL', {
+                loadstart: function (e) {
+                    console.log(e, 'start');
+                },
+                progress: function (e, loaded, total) {
+                    console.log('progress', loaded, total);
+                    // 当前读取进度 / 读取总长度 * 100;
+                    var precent = Math.round(loaded / total * 100) ;
+                    console.log(precent);
+                    // 进度条宽度 * precent / 100
+                    var width = Math.round(300 * precent / 100);
+                    console.log(width);
+                    bar.style.width = width + 'px';
+                    text.innerHTML = precent + '%';
+                },
+                load: function (e) {
+                    console.log(e, 'onload')
+                    img.src = this.result;//result64编码的数据
+                }
+            });
+        }
+
+ 
+
+    
+
+        // reader.onloadstart = function (e) { // 开始
+        //     // this == e.target
+        //     console.log(e, 'start');
+        // }
+        // reader.onprogress = function (e) { // 读取中
+        //     console.log(e, 'onprogress')
+        //     // 当前读取进度 / 读取总长度 * 100;
+        //     var precent = e.loaded / e.total * 100;
+        //     console.log(precent);
+        //     // 进度条宽度 * precent / 100
+        //     var width = Math.round( 300 * precent / 100);
+        //     console.log(width);
+        //     bar.style.width = width + 'px';
+        //     text.innerHTML = precent + '%';
+        // }
+        // reader.onloadend = function (e) { //  读取完成触发，无论成功或失败
+        //     console.log(e, 'onprogress')
+        // }
+
+        // reader.onload = function (e) { // 读取成功
+        //     console.log(e, 'onload')
+        //     img.src = this.result;//result64编码的数据
+        // }
+
+        // btn.onclick = function () {
+        //     reader.abort();
+        // }
+
+
+
+
+    </script>
+</body>
+
+</html>
